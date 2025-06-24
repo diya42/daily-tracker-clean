@@ -12,6 +12,9 @@ import jwt
 import os
 from contextlib import contextmanager
 import json
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 
 # Initialize FastAPI app
 app = FastAPI(title="Daily Tracker API", version="1.0.0")
@@ -2620,15 +2623,16 @@ async def update_activity(
         conn.commit()
         return {"message": "Activity updated successfully"}
 
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
 
+app = FastAPI()
+
+# Serve static files (optional if you have JS/CSS later)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+# Serve the frontend file
 @app.get("/")
-async def serve_ui():
+async def read_index():
     return FileResponse("static/uiux.html")
-
 
 
 if __name__ == "__main__":
