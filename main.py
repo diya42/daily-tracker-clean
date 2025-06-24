@@ -2620,6 +2620,17 @@ async def update_activity(
         conn.commit()
         return {"message": "Activity updated successfully"}
 
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+@app.get("/")
+async def serve_ui():
+    return FileResponse("static/uiux.html")
+
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
