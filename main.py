@@ -4,8 +4,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel, Field, EmailStr
 from typing import List, Optional, Dict, Any
 from datetime import datetime, date, timedelta
-import mysql.connector
-from mysql.connector import Error
+
 import hashlib
 import jwt
 import os
@@ -14,10 +13,10 @@ import json
 import re
 from fastapi import status
 from pydantic import validator
-import os
-import mysql.connector
+
 from sqlalchemy.orm import Session
 from db import get_db
+from db import Base, engine
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -38,104 +37,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# MySQL Database Configuration
-DB_CONFIG = {
-    'host': os.getenv('DB_HOST', 'localhost'),
-    'port': int(os.getenv('DB_PORT', 3307)),
-    'user': os.getenv('DB_USER', 'root'),
-    'password': os.getenv('DB_PASSWORD', 'siya1'),
-    'database': os.getenv('DB_NAME', 'daily_tracker'),
-    'charset': 'utf8mb4',
-    'use_unicode': True,
-    'autocommit': True
-}
+# main.py or a new utils.py file
 
 
 def init_db():
-    """Initialize the database with required tables"""
-    conn = None
+    """Initializes tables in Railway's preconfigured DB"""
     try:
-
-        temp_config = {
-    "user": os.getenv("DB_USER"),
-    "password": os.getenv("DB_PASSWORD"),
-    "host": os.getenv("DB_HOST"),
-    "port": int(os.getenv("DB_PORT", 3306)),
-    "database": os.getenv("DB_NAME"),
-}
-        database_name = os.getenv("DB_NAME")
-
-
-        # Connect to MySQL server (no database first)
-        conn = mysql.connector.connect(**temp_config)
-        cursor = conn.cursor()
-        cursor.execute(f"CREATE DATABASE IF NOT EXISTS {database_name}")
-        conn.commit()
-        cursor.close()
-        conn.close()
-
-        # Now connect again with the actual database
-        temp_config["database"] = database_name
-        conn = mysql.connector.connect(**temp_config)
-        cursor = conn.cursor()
-
-        # Create `users` table
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS users (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                email VARCHAR(255) UNIQUE NOT NULL,
-                password_hash VARCHAR(255) NOT NULL,
-                name VARCHAR(255) NOT NULL,
-                age INT,
-                gender VARCHAR(50),
-                is_active BOOLEAN DEFAULT TRUE,
-                last_login DATETIME,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """)
-
-        # Create `activities` table
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS activities (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                user_id INT NOT NULL,
-                category VARCHAR(255) NOT NULL,
-                duration_minutes INT NOT NULL,
-                notes TEXT,
-                mood_rating INT,
-                photo_url TEXT,
-                activity_date DATE NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
-            )
-        """)
-
-        conn.commit()
-        print("✅ Database initialized successfully.")
-
+        Base.metadata.create_all(bind=engine)
+        print("✅ Tables created successfully.")
     except Exception as e:
-        print(f"❌ Error initializing database: {e}")
+        print(f"❌ Error initializing DB: {e}")
         raise RuntimeError(f"Database initialization failed: {e}")
-
-    finally:
-        if conn and conn.is_connected():
-            cursor.close()
-            conn.close()
-
-
-@contextmanager
-def get_db():
-    """Database context manager"""
-    conn = None
-    try:
-        conn = mysql.connector.connect(**DB_CONFIG)
-        yield conn
-    except Error as e:
-        print(f"Database connection error: {e}")
-        raise HTTPException(status_code=500, detail=f"Database connection failed: {e}")
-    finally:
-        if conn and conn.is_connected():
-            conn.close()
 
 # Pydantic models
 
