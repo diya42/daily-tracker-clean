@@ -266,10 +266,8 @@ def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)) 
 async def startup_event():
     """Initialize database on startup"""
     init_db()
-
-@app.get("/")
+@app.get("/api")
 async def root():
-    """Root endpoint"""
     return {
         "message": "Daily Tracker API is running with MySQL", 
         "status": "healthy",
