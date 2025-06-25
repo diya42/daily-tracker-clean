@@ -1022,6 +1022,7 @@ async def get_trends(user_id: int = Depends(verify_token)):
             ))
         
         return {"trends": trends}
+# Triggering redeploy with clean commit
 
 # Run the application
 if __name__ == "__main__":
