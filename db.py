@@ -4,7 +4,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
 # Load DB URL from Railway or .env
-DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = os.getenv("DATABASE_URL").replace("mysql://", "mysql+pymysql://")
+
 
 # Use pymysql for MySQL
 engine = create_engine(DATABASE_URL, echo=True)
