@@ -949,7 +949,7 @@ def get_db():
         db.close()
 @app.get("/")
 async def serve_ui():
-    return FileResponse("static/uiux.html")
+    return FileResponse("static/index.html")
 @app.post("/create-user")
 def create_user(name: str, db: Session = Depends(get_db)):
     user = User(name=name)
