@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field, EmailStr
 from typing import List, Optional, Dict, Any
 from datetime import datetime, date, timedelta
@@ -946,7 +947,9 @@ def get_db():
         yield db
     finally:
         db.close()
-
+@app.get("/")
+async def serve_ui():
+    return FileResponse("static/uiux.html")
 @app.post("/create-user")
 def create_user(name: str, db: Session = Depends(get_db)):
     user = User(name=name)
@@ -957,4 +960,5 @@ def create_user(name: str, db: Session = Depends(get_db)):
 # Run the application
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=5000)
+    port = int(os.environ.get("PORT", 8080))  # Use Railway's assigned port
+    uvicorn.run("main:app", host="0.0.0.0", port=port)
