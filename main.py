@@ -58,7 +58,8 @@ def init_db():
     "user": os.getenv("DB_USER"),
     "password": os.getenv("DB_PASSWORD"),
     "host": os.getenv("DB_HOST"),
-    "port": int(os.getenv("DB_PORT", 3306))
+    "port": int(os.getenv("DB_PORT", 3306)),
+    "database": os.getenv("DB_NAME"),
 }
         database_name = os.getenv("DB_NAME")
 
@@ -1022,7 +1023,6 @@ async def get_trends(user_id: int = Depends(verify_token)):
             ))
         
         return {"trends": trends}
-# Triggering redeploy with clean commit
 
 # Run the application
 if __name__ == "__main__":
