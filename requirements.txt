@@ -5,3 +5,5 @@ PyJWT
 python-multipart
 pydantic[email]
 python-dotenv
+sqlalchemy
+pymysql

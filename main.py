@@ -1023,7 +1023,20 @@ async def get_trends(user_id: int = Depends(verify_token)):
             ))
         
         return {"trends": trends}
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
+@app.post("/create-user")
+def create_user(name: str, db: Session = Depends(get_db)):
+    user = User(name=name)
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
 # Run the application
 if __name__ == "__main__":
     import uvicorn
