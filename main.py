@@ -16,6 +16,8 @@ from fastapi import status
 from pydantic import validator
 import os
 import mysql.connector
+from sqlalchemy.orm import Session
+from db import get_db
 from dotenv import load_dotenv
 load_dotenv()
 
