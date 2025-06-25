@@ -7,3 +7,4 @@ pydantic[email]
 python-dotenv
 sqlalchemy
 pymysql
+jinja2

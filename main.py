@@ -4,6 +4,8 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel, Field, EmailStr
 from typing import List, Optional, Dict, Any
 from datetime import datetime, date, timedelta
+from fastapi.staticfiles import StaticFiles
+
 
 import hashlib
 import jwt
@@ -23,6 +25,7 @@ load_dotenv()
 
 # Initialize FastAPI app
 app = FastAPI(title="Daily Tracker API", version="1.0.0")
+app.mount("/", StaticFiles(directory="static", html=True), name="static")
 
 # Security
 security = HTTPBearer()
