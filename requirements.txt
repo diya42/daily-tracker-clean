@@ -4,3 +4,4 @@ mysql-connector-python
 PyJWT
 python-multipart
 pydantic[email]
+python-dotenv
